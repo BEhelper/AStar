@@ -20,3 +20,4 @@ function MapFactory()
         return new this.maps[selected](cols, rows, x, y, w, h, allowDiagonals, percentWalls);
     }
 }
+

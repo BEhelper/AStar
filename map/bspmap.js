@@ -197,8 +197,10 @@ function BspRoom(container)
     this.y = container.y + floor(random(0, Math.floor(container.h/3)));
     this.w = container.w - (this.x - container.x);
     this.h = container.h - (this.y - container.y);
-    this.w -= floor(random(0, this.w/3));
-    this.h -= floor(random(0, this.w/3));
+    //this.w -= floor(random(0, this.w/3));
+    //this.h -= floor(random(0, this.w/3));
+    this.w -= floor(random(0, this.w/4));
+    this.h -= floor(random(0, this.w/4));
 
     // We mark the empty spaces for the room
     this.removeWallsFromGrid = function(grid)

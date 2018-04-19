@@ -15,7 +15,8 @@ function MapFactory()
     {
         if(this.maps.length == 0) return undefined;
 
-        var selected = floor(random(this.maps.length));
+        //var selected = floor(random(this.maps.length));
+        var selected = floor(this.maps[1]));
         return new this.maps[selected](cols, rows, x, y, w, h, allowDiagonals, percentWalls);
     }
 }

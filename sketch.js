@@ -119,6 +119,20 @@ function Button(label, x, y, w, h, callback) {
     }
 }
 
+
+function RoomStyle(label, x, y, w, h, callback) {
+    this.label = label;
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.callback = callback;
+}
+
+
+
+
+
   // Start and end
   // start = grid[0][0];
   // end = grid[cols - 1][rows - 1];
@@ -164,6 +178,11 @@ function doGUI() {
 }
 
 
+function roomone(button) {
+    // pauseUnpause(!paused);
+}
+
+
 var gamemap;
 var uiElements = [];
 var paused = true;
@@ -172,9 +191,18 @@ var status = "";
 var stepsAllowed = 0;
 var runPauseButton;
 
+//brad
+var roomTypeOne;
+
 function initaliseSearchExample(rows, cols) {
     mapGraphic = null;
-    gamemap = new MapFactory().getMap(cols, rows, 10, 10, 410, 410, allowDiagonals, percentWalls);
+
+    // BRAD
+
+    roomTypeOne = new RoomStyle("roomthis", 6, 6, 6, 6, roomone);
+
+
+    gamemap = new MapFactory().getMap(cols, rows, 10, 10, 410, 410, allowDiagonals, percentWalls, roomTypeOne);
     start = gamemap.grid[0][0];
     end = gamemap.grid[cols - 1][rows - 1];
     start.wall = false;
@@ -196,7 +224,7 @@ function setup() {
 
     initaliseSearchExample(cols, rows);
 
-    runPauseButton = new Button("run", 430, 20, 50, 30, runpause);
+    runPauseButton = new Button("run", 430, 20, 90, 30, runpause);
     uiElements.push(runPauseButton);
     uiElements.push(new Button("step", 430, 70, 50, 30, step));
     uiElements.push(new Button("restart", 430, 120, 50, 30, restart));

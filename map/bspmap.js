@@ -4,7 +4,7 @@
 // This could be improved by adding different types of rooms other than
 // rectangle spaces, plus the connecting hallways are naive at best.
 
-function BspMap(cols, rows, x, y, w, h, allowDiagonals, percentWalls){
+function BspMap(cols, rows, x, y, w, h, allowDiagonals, percentWalls, room){
     this.cols = cols;
     this.rows = rows;
     this.x = x;
@@ -13,6 +13,13 @@ function BspMap(cols, rows, x, y, w, h, allowDiagonals, percentWalls){
     this.h = h;
     this.allowDiagonals = allowDiagonals;
     this.mainTree;
+
+    //brad
+    console.log(room);
+    this.roomW = room.w;
+    this.roomH = room.h;
+    this.roomX = room.x;
+    this.roomY = room.y;
 
     this.grid = [];
     this.path = [];
@@ -41,9 +48,12 @@ function BspMap(cols, rows, x, y, w, h, allowDiagonals, percentWalls){
 
         // Write the rooms into the grid
         var leafs = this.mainTree.getLeafs();
+
+
         for(var i= 0; i < leafs.length; i++)
         {
-            var room = new BspRoom(leafs[i]);
+            // var room = new BspRoom(leafs[i );  //orig
+            var room = new BspRoom(leafs[i], this.roomW, this.roomH, this.roomX, this.roomY); //brad
             room.removeWallsFromGrid(this.grid);
         }
         // Write the halls into the grid
@@ -191,16 +201,17 @@ function BspContainer(x, y, w, h)
 }
 
 // Used to create the actual room within the container space.
-function BspRoom(container)
+// BRAD all notes to roomWidth...height, roomX...Y are new. most were ints of value 3 to 4
+function BspRoom(container, roomWidth, roomHeight, roomX, roomY)
 {
-    this.x = container.x + floor(random(0, Math.floor(container.w/3)));
-    this.y = container.y + floor(random(0, Math.floor(container.h/3)));
+    this.x = container.x + floor(random(0, Math.floor(container.w/roomX)));
+    this.y = container.y + floor(random(0, Math.floor(container.h/roomY)));
     this.w = container.w - (this.x - container.x);
     this.h = container.h - (this.y - container.y);
     //this.w -= floor(random(0, this.w/3));
     //this.h -= floor(random(0, this.w/3));
-    this.w -= floor(random(0, this.w/4));
-    this.h -= floor(random(0, this.w/4));
+    this.w -= floor(random(0, this.w/roomWidth));
+    this.h -= floor(random(0, this.w/roomHeight));
 
     // We mark the empty spaces for the room
     this.removeWallsFromGrid = function(grid)

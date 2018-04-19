@@ -37,7 +37,7 @@ function Spot(i, j, x, y, width, height, isWall, grid) {
     // Display me
     this.show = function(color) {
         if (this.wall) {
-            fill(10);
+            fill(0);
             noStroke();
 
             if (drawingOption === 0) {

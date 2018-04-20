@@ -130,7 +130,9 @@ function RoomStyle(label, x, y, w, h, callback) {
 }
 
 
+function createSlider() {
 
+}
 
 
   // Start and end
@@ -179,7 +181,32 @@ function doGUI() {
 
 
 function roomone(button) {
+  var valX = sliderRoomX.value();
+  var valY = sliderRoomY.value();
+  var valW = sliderRoomW.value();
+  var valH = sliderRoomH.value();
+  console.log(valX);
+  console.log(button.label);
+  roomTypeOne = new RoomStyle("roomthis", valX, valY, valW, valH, roomone);
+  logTimings();
+  clearTimings();
+  initaliseSearchExample(cols, rows);
+  pauseUnpause(true);
     // pauseUnpause(!paused);
+}
+
+
+function sliderChanged() {
+  var valX = sliderRoomX.value();
+  var valY = sliderRoomY.value();
+  var valW = sliderRoomW.value();
+  var valH = sliderRoomH.value();
+  console.log(valX);
+  roomTypeOne = new RoomStyle("roomthis", valX, valY, valW, valH, roomone);
+  logTimings();
+  clearTimings();
+  initaliseSearchExample(cols, rows);
+  pauseUnpause(true);
 }
 
 
@@ -192,14 +219,14 @@ var stepsAllowed = 0;
 var runPauseButton;
 
 //brad
-var roomTypeOne;
+var roomTypeOne = new RoomStyle("roomthis", 6, 6, 6, 6, roomone);
 
 function initaliseSearchExample(rows, cols) {
     mapGraphic = null;
 
     // BRAD
 
-    roomTypeOne = new RoomStyle("roomthis", 6, 6, 6, 6, roomone);
+    // roomTypeOne = new RoomStyle("roomthis", 6, 6, 6, 6, roomone);
 
 
     gamemap = new MapFactory().getMap(cols, rows, 10, 10, 410, 410, allowDiagonals, percentWalls, roomTypeOne);
@@ -229,6 +256,28 @@ function setup() {
     uiElements.push(new Button("step", 430, 70, 50, 30, step));
     uiElements.push(new Button("restart", 430, 120, 50, 30, restart));
     uiElements.push(new SettingBox("AllowDiag", 430, 180, allowDiagonals, toggleDiagonals));
+
+    uiElements.push(new Button("new", 430, 220, 50, 30, roomone));
+
+    sliderRoomX = createSlider(1, 12, 6, 1);
+    sliderRoomX.position(460, 500);
+    sliderRoomX.style('width', '100px');
+    sliderRoomX.input(sliderChanged);
+
+    sliderRoomY = createSlider(1, 12, 6, 1);
+    sliderRoomY.position(460, 530);
+    sliderRoomY.style('width', '100px');
+    sliderRoomY.input(sliderChanged);
+
+    sliderRoomW = createSlider(1, 12, 6, 1);
+    sliderRoomW.position(460, 560);
+    sliderRoomW.style('width', '100px');
+    sliderRoomW.input(sliderChanged);
+
+    sliderRoomH = createSlider(1, 12, 6, 1);
+    sliderRoomH.position(460, 590);
+    sliderRoomH.style('width', '100px');
+    sliderRoomH.input(sliderChanged);
 
     recordTime("Setup");
 }
@@ -286,6 +335,14 @@ function draw() {
 
     text("Search status - " + status, 10, 450);
 
+    text("ROOM LAYOUT: ", 430, 300);
+    var toproomtext = 320;
+    var spacing = 30;
+    text("x = " + sliderRoomX.value(), sliderRoomX.x + 75, toproomtext + (spacing * 0));
+    text("y = "+ sliderRoomY.value(), sliderRoomY.x + 75, toproomtext + (spacing * 1));
+    text("width = " + sliderRoomW.value(), sliderRoomW.x + 75, toproomtext + (spacing * 2));
+    text("height = " + sliderRoomH.value(), sliderRoomH.x + 75, toproomtext + (spacing * 3));
+
     startTime();
 
     drawMap();
@@ -308,10 +365,11 @@ function draw() {
 
     fill(0);
     if (infoNode != null) {
-        text("f = " + infoNode.f, 430, 230);
-        text("g = " + infoNode.g, 430, 250);
-        text("h = " + infoNode.h, 430, 270);
-        text("vh = " + infoNode.vh, 430, 290);
+        var verticalSpacing = 200;
+        text("f = " + infoNode.f, 280, verticalSpacing + 230);
+        text("g = " + infoNode.g, 280, verticalSpacing + 250);
+        text("h = " + infoNode.h, 280, verticalSpacing + 270);
+        text("vh = " + infoNode.vh, 280, verticalSpacing + 290);
 
     }
 

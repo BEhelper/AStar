@@ -18,8 +18,12 @@ function BspMap(cols, rows, x, y, w, h, allowDiagonals, percentWalls, room){
     console.log(room);
     this.roomW = room.w;
     this.roomH = room.h;
-    this.roomX = room.x;
-    this.roomY = room.y;
+    this.roomX = 6;//room.x;
+    this.roomY = 6;//room.y;
+
+
+    this.contY = room.y;
+    this.contX = room.x;
 
     this.grid = [];
     this.path = [];
@@ -43,7 +47,7 @@ function BspMap(cols, rows, x, y, w, h, allowDiagonals, percentWalls, room){
             }
         }
 
-        var mainContainer = new BspContainer(1, 1, this.cols-2, this.rows-2);
+        var mainContainer = new BspContainer(1, 1, this.cols-2, this.rows-2, this.contY);
         this.mainTree = this.splitContainer(mainContainer, this.N_ITERATIONS);
 
         // Write the rooms into the grid
@@ -53,7 +57,7 @@ function BspMap(cols, rows, x, y, w, h, allowDiagonals, percentWalls, room){
         for(var i= 0; i < leafs.length; i++)
         {
             // var room = new BspRoom(leafs[i );  //orig
-            var room = new BspRoom(leafs[i], this.roomW, this.roomH, this.roomX, this.roomY); //brad
+            var room = new BspRoom(leafs[i], this.roomW, this.roomH, this.roomX, this.contY, this.contX ); //brad
             room.removeWallsFromGrid(this.grid);
         }
         // Write the halls into the grid
@@ -134,11 +138,11 @@ function BspMap(cols, rows, x, y, w, h, allowDiagonals, percentWalls, room){
             // Vertical
             region1 = new BspContainer(
                 container.x, container.y,             // region1.x, region1.y
-                this.random(1, container.w), container.h   // region1.w, region1.h
+                this.random(1, container.w), container.h, this.contY, this.contX    // region1.w, region1.h
             );
             region2 = new BspContainer(
                 container.x + region1.w, container.y,      // region2.x, region2.y
-                container.w - region1.w, container.h       // region2.w, region2.h
+                container.w - region1.w, container.h, this.contY, this.contX        // region2.w, region2.h
             );
 
             if (this.DISCARD_BY_RATIO) {
@@ -152,11 +156,11 @@ function BspMap(cols, rows, x, y, w, h, allowDiagonals, percentWalls, room){
             // Horizontal
             region1 = new BspContainer(
                 container.x, container.y,             // region1.x, region1.y
-                container.w, this.random(1, container.h)   // region1.w, region1.h
+                container.w, this.random(1, container.h), this.contY, this.contX    // region1.w, region1.h
             );
             region2 = new BspContainer(
                 container.x, container.y + region1.h,      // region2.x, region2.y
-                container.w, container.h - region1.h       // region2.w, region2.h
+                container.w, container.h - region1.h, this.contY, this.contX       // region2.w, region2.h
             );
 
             if (this.DISCARD_BY_RATIO) {
@@ -191,13 +195,13 @@ function BspTree(leaf)
 }
 
 // The container is the partitioned region to put a room into
-function BspContainer(x, y, w, h)
+function BspContainer(x, y, w, h, contY, contX)
 {
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
-    this.center = {x:this.x+this.w/2, y:this.y+this.h/2};
+    this.center = {x:this.x+this.w/contX, y:this.y+this.h/contY};
 }
 
 // Used to create the actual room within the container space.
@@ -211,7 +215,7 @@ function BspRoom(container, roomWidth, roomHeight, roomX, roomY)
     //this.w -= floor(random(0, this.w/3));
     //this.h -= floor(random(0, this.w/3));
     this.w -= floor(random(0, this.w/roomWidth));
-    this.h -= floor(random(0, this.w/roomHeight));
+    this.h -= floor(random(0, this.h/roomHeight));
 
     // We mark the empty spaces for the room
     this.removeWallsFromGrid = function(grid)
@@ -230,6 +234,8 @@ function BspRoom(container, roomWidth, roomHeight, roomX, roomY)
     {
         switch (floor(random(0,10))) {
             case 0:
+                this.decorate_columns(grid);
+                break;
             case 1:
                 this.decorate_columns(grid);
                 break;
@@ -244,7 +250,7 @@ function BspRoom(container, roomWidth, roomHeight, roomX, roomY)
     // Evenly spaced out columns
     this.decorate_columns = function(grid)
     {
-        var spacing = floor(random(3,5));
+        var spacing = floor(random(3,7));
         var cols = this.w / spacing;
         var rows = this.h / spacing;
         for(var x = this.x + 1; x < this.x + this.w - 1; x+=spacing){

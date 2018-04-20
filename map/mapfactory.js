@@ -3,7 +3,7 @@
 //
 // To contribute, push your map object function onto the this.maps array,
 // as below.
-
+var listOfContainters = [];
 function MapFactory()
 {
     this.maps = [];
@@ -19,4 +19,6 @@ function MapFactory()
         //var selected = floor(this.maps[1]);
         return new this.maps[selected](cols, rows, x, y, w, h, allowDiagonals, percentWalls, room_x);
     }
+
+    console.log(listOfContainters);
 }

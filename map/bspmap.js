@@ -15,7 +15,7 @@ function BspMap(cols, rows, x, y, w, h, allowDiagonals, percentWalls, room){
     this.mainTree;
 
     //brad
-    console.log(room);
+    // console.log(room);
     this.roomW = room.w;
     this.roomH = room.h;
     this.roomX = 6;//room.x;
@@ -24,6 +24,7 @@ function BspMap(cols, rows, x, y, w, h, allowDiagonals, percentWalls, room){
 
     this.contY = room.y;
     this.contX = room.x;
+    this.openx = room.openx;
 
     this.grid = [];
     this.path = [];
@@ -43,7 +44,7 @@ function BspMap(cols, rows, x, y, w, h, allowDiagonals, percentWalls, room){
         for (var i = 0; i < this.cols; i++) {
             this.grid[i] = [];
             for (var j = 0; j < this.rows; j++) {
-                this.grid[i][j] = new Spot(i, j, x + i * w /this.cols, y + j * h / this.rows, w / this.cols, h / this.rows, true, this.grid);
+                this.grid[i][j] = new Spot(i, j, x + i * w /this.cols, y + j * h / this.rows, w / this.cols, h / this.rows, true, this.grid, false);
             }
         }
 
@@ -146,8 +147,8 @@ function BspMap(cols, rows, x, y, w, h, allowDiagonals, percentWalls, room){
             );
 
             if (this.DISCARD_BY_RATIO) {
-                var region1_w_ratio = region1.w / region1.h;
-                var region2_w_ratio = region2.w / region2.h
+                var region1_w_ratio = region1.w / region1.h;// * this.openx;
+                var region2_w_ratio = region2.w / region2.h;// * this.openx;
                 if (region1_w_ratio < this.W_RATIO || region2_w_ratio < this.W_RATIO) {
                     return this.random_split(container);
                 }
@@ -164,8 +165,8 @@ function BspMap(cols, rows, x, y, w, h, allowDiagonals, percentWalls, room){
             );
 
             if (this.DISCARD_BY_RATIO) {
-                var region1_h_ratio = region1.h / region1.w;
-                var region2_h_ratio = region2.h / region2.w;
+                var region1_h_ratio = region1.h / region1.w;// *  this.openx;
+                var region2_h_ratio = region2.h / region2.w;//  * this.openx;
                 if (region1_h_ratio < this.H_RATIO || region2_h_ratio < this.H_RATIO) {
                     return this.random_split(container)
                 };
@@ -175,6 +176,8 @@ function BspMap(cols, rows, x, y, w, h, allowDiagonals, percentWalls, room){
     }
 
     this.build();
+    // return listOfContainters;
+    // console.log(listOfContainters);
 }
 
 // The tree tracks the leaf node (container) and it's partitioned children
@@ -197,11 +200,15 @@ function BspTree(leaf)
 // The container is the partitioned region to put a room into
 function BspContainer(x, y, w, h, contY, contX)
 {
+    // var roomOptionsList = ["Kitchen", "Living", "Foyer", "Bedroom", "Bathroom"];
+    var roomOptionsList = ["Bathroom", "Office", "Entry", "Meeting", "Classroom", "Reception", "Open Office"];
+
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
     this.center = {x:this.x+this.w/contX, y:this.y+this.h/contY};
+    this.roomname = roomOptionsList[floor(random(roomOptionsList.length))];
 }
 
 // Used to create the actual room within the container space.
@@ -212,37 +219,45 @@ function BspRoom(container, roomWidth, roomHeight, roomX, roomY)
     this.y = container.y + floor(random(0, Math.floor(container.h/roomY)));
     this.w = container.w - (this.x - container.x);
     this.h = container.h - (this.y - container.y);
-    //this.w -= floor(random(0, this.w/3));
-    //this.h -= floor(random(0, this.w/3));
+
+    listOfContainters.push([this.x, this.y]);
+
     this.w -= floor(random(0, this.w/roomWidth));
     this.h -= floor(random(0, this.h/roomHeight));
 
     // We mark the empty spaces for the room
     this.removeWallsFromGrid = function(grid)
     {
+        grid[this.x][this.y].roomstart = true;
+        // grid[container.x][container.y].roomstart = true;
         for(var x=this.x; x < this.x + this.w; x++){
             for(var y = this.y; y < this.y + this.h; y++)
             {
                 grid[x][y].wall = false;
+                grid[x][y].roomwidth = container.w;
+                grid[x][y].roomheight = container.h;
+                grid[x][y].roomname = container.roomname;
+                grid[x][y].roomcenter = container.center; //not really needed
+
             }
         }
         this.decorate(grid);
     }
+
     // This decorator randomly applies obsticles to the room,
     // giving them more personality
     this.decorate = function(grid)
     {
+        this.decorate_columns(grid);
         switch (floor(random(0,10))) {
             case 0:
-                this.decorate_columns(grid);
-                break;
             case 1:
-                this.decorate_columns(grid);
-                break;
+                // this.decorate_columns(grid);
+                // break;
             case 2:
             case 3:
-                this.decorate_circle(grid);
-                break;
+                // this.decorate_circle(grid);
+                // break;
             default:
                 return;
         }
@@ -250,7 +265,8 @@ function BspRoom(container, roomWidth, roomHeight, roomX, roomY)
     // Evenly spaced out columns
     this.decorate_columns = function(grid)
     {
-        var spacing = floor(random(3,7));
+        var spacing = floor(7);
+        // var spacing = floor(random(3,7));
         var cols = this.w / spacing;
         var rows = this.h / spacing;
         for(var x = this.x + 1; x < this.x + this.w - 1; x+=spacing){

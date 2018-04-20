@@ -120,12 +120,13 @@ function Button(label, x, y, w, h, callback) {
 }
 
 
-function RoomStyle(label, x, y, w, h, callback) {
+function RoomStyle(label, x, y, w, h, openx, callback) {
     this.label = label;
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
+    this.openx = 6;//openx;
     this.callback = callback;
 }
 
@@ -185,9 +186,10 @@ function roomone(button) {
   var valY = sliderRoomY.value();
   var valW = sliderRoomW.value();
   var valH = sliderRoomH.value();
-  console.log(valX);
-  console.log(button.label);
-  roomTypeOne = new RoomStyle("roomthis", valX, valY, valW, valH, roomone);
+  var valOpenX = sliderRoomOpenX.value();
+  // console.log(valX);
+  // console.log(button.label);
+  roomTypeOne = new RoomStyle("roomthis", valX, valY, valW, valH, valOpenX, roomone);
   logTimings();
   clearTimings();
   initaliseSearchExample(cols, rows);
@@ -201,8 +203,9 @@ function sliderChanged() {
   var valY = sliderRoomY.value();
   var valW = sliderRoomW.value();
   var valH = sliderRoomH.value();
-  console.log(valX);
-  roomTypeOne = new RoomStyle("roomthis", valX, valY, valW, valH, roomone);
+  var valOpenX = sliderRoomOpenX.value();
+  // console.log(valX);
+  roomTypeOne = new RoomStyle("roomthis", valX, valY, valW, valH, valOpenX, roomone);
   logTimings();
   clearTimings();
   initaliseSearchExample(cols, rows);
@@ -219,14 +222,14 @@ var stepsAllowed = 0;
 var runPauseButton;
 
 //brad
-var roomTypeOne = new RoomStyle("roomthis", 6, 6, 6, 6, roomone);
+var roomTypeOne = new RoomStyle("roomthis", 6, 6, 6, 6, 1, roomone);
 
 function initaliseSearchExample(rows, cols) {
     mapGraphic = null;
 
     // BRAD
 
-    // roomTypeOne = new RoomStyle("roomthis", 6, 6, 6, 6, roomone);
+    // roomTypeOne = new RoomStyle("roomthis", 6, 6, 6, 6, 1, roomone);
 
 
     gamemap = new MapFactory().getMap(cols, rows, 10, 10, 410, 410, allowDiagonals, percentWalls, roomTypeOne);
@@ -242,7 +245,7 @@ function setup() {
     startTime();
 
     if (getURL().toLowerCase().indexOf("fullscreen") === -1) {
-        createCanvas(600, 600);
+        createCanvas(700, 600);
     } else {
         var sz = min(windowWidth, windowHeight);
         createCanvas(sz, sz);
@@ -259,25 +262,31 @@ function setup() {
 
     uiElements.push(new Button("new", 430, 220, 50, 30, roomone));
 
+    var sliderTop = 475;
     sliderRoomX = createSlider(1, 12, 6, 1);
-    sliderRoomX.position(460, 500);
+    sliderRoomX.position(460, sliderTop + 0);
     sliderRoomX.style('width', '100px');
     sliderRoomX.input(sliderChanged);
 
     sliderRoomY = createSlider(1, 12, 6, 1);
-    sliderRoomY.position(460, 530);
+    sliderRoomY.position(460, sliderTop + 30);
     sliderRoomY.style('width', '100px');
     sliderRoomY.input(sliderChanged);
 
     sliderRoomW = createSlider(1, 12, 6, 1);
-    sliderRoomW.position(460, 560);
+    sliderRoomW.position(460, sliderTop + 60);
     sliderRoomW.style('width', '100px');
     sliderRoomW.input(sliderChanged);
 
     sliderRoomH = createSlider(1, 12, 6, 1);
-    sliderRoomH.position(460, 590);
+    sliderRoomH.position(460, sliderTop + 90);
     sliderRoomH.style('width', '100px');
     sliderRoomH.input(sliderChanged);
+
+    sliderRoomOpenX = createSlider(1, 12, 6, 1);
+    sliderRoomOpenX.position(460, sliderTop + 120);
+    sliderRoomOpenX.style('width', '100px');
+    sliderRoomOpenX.input(sliderChanged);
 
     recordTime("Setup");
 }
@@ -315,6 +324,9 @@ function drawMap() {
             for (var j = 0; j < gamemap.rows; j++) {
                 if (gamemap.grid[i][j].wall) {
                     gamemap.grid[i][j].show(color(255));
+                }
+                if (gamemap.grid[i][j].roomstart) {
+                    gamemap.grid[i][j].show(color(0, 120, 30));
                 }
             }
         }
@@ -394,7 +406,7 @@ function calcPath(endNode) {
 function drawPath(path) {
     // Drawing path as continuous line
     noFill();
-    stroke(255, 0, 200);
+    stroke(25, 19, 250);
     strokeWeight(gamemap.w / gamemap.cols / 2);
     beginShape();
     for (var i = 0; i < path.length; i++) {

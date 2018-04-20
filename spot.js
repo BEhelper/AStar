@@ -6,7 +6,10 @@
 // Part 3: https://youtu.be/jwRT4PCT6RU
 
 // An object to describe a spot in the grid
-function Spot(i, j, x, y, width, height, isWall, grid) {
+
+function Spot(i, j, x, y, width, height, isWall, grid, isContStart) {
+
+    var roomOptionsList = ["Bathroom", "Office", "Entry", "Meeting", "Classroom"];
 
     this.grid = grid;
 
@@ -31,6 +34,13 @@ function Spot(i, j, x, y, width, height, isWall, grid) {
     // Am I an wall?
     this.wall = isWall;
 
+    this.roomstart = isContStart;
+    this.roomwidth = 0;
+    this.roomheight = 0;
+    this.roomtitle = "nothing";
+    this.roomname = "nothing";
+    this.roomcenter = 0;
+
     // Did the maze algorithm already visit me?
     this.visited = false;
 
@@ -47,7 +57,7 @@ function Spot(i, j, x, y, width, height, isWall, grid) {
             }
 
             stroke(0);
-            strokeWeight(this.width / 2);
+            strokeWeight(4);//this.width / 2);
 
             var nWalls = this.getNeighboringWalls(this.grid);
             for (var i = 0; i < nWalls.length; i++) {
@@ -71,10 +81,29 @@ function Spot(i, j, x, y, width, height, isWall, grid) {
                         nw.y + nw.height / 2);
                 }
             }
+        } else if (this.roomstart==true) {
+            if (this.roomtitle=="nothing") {
+              this.roomtitle = roomOptionsList[floor(random(roomOptionsList.length))];
+              // console.log(this.roomtitle, this.roomcenter, "cont start!!!!! !!!! !!!!!!!");
+              fill(180);//0, 120, 30);
+              noStroke();
+              rect(this.x, this.y, this.width/2, this.height/2);
+              textSize(16);
+              text(this.roomname, this.x + 20, this.y + 20);
+              // text(this.roomname, this.x + this.roomcenter["x"], this.y + this.roomcenter["y"]);
+              text(this.roomwidth + " x " + this.roomheight, this.x + 20, this.y + 35);
+              // text(this.roomwidth + " x " + this.roomheight, this.x + this.roomcenter["x"], this.y + this.roomcenter["y"] + 15);
+
+
+            }
+            // if () {
+
+            // }
+
         } else if (color) {
-            fill(color);
-            noStroke();
-            rect(this.x, this.y, this.width, this.height);
+          fill(color);
+          noStroke();
+          rect(this.x, this.y, this.width, this.height);
         }
     }
 

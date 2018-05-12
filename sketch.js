@@ -260,7 +260,7 @@ function setup() {
     uiElements.push(new Button("restart", 430, 120, 90, 30, restart));
     uiElements.push(new SettingBox("AllowDiag", 430, 180, allowDiagonals, toggleDiagonals));
 
-    uiElements.push(new Button("new", 430, 220, 50, 30, roomone));
+    uiElements.push(new Button("new", 430, 220, 90, 30, roomone));
 
     var sliderTop = 475;
     sliderRoomX = createSlider(1, 12, 6, 1);

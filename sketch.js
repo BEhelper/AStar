@@ -256,8 +256,8 @@ function setup() {
 
     runPauseButton = new Button("run", 430, 20, 90, 30, runpause);
     uiElements.push(runPauseButton);
-    uiElements.push(new Button("step", 430, 70, 50, 30, step));
-    uiElements.push(new Button("restart", 430, 120, 50, 30, restart));
+    uiElements.push(new Button("step", 430, 70, 90, 30, step));
+    uiElements.push(new Button("restart", 430, 120, 90, 30, restart));
     uiElements.push(new SettingBox("AllowDiag", 430, 180, allowDiagonals, toggleDiagonals));
 
     uiElements.push(new Button("new", 430, 220, 50, 30, roomone));
